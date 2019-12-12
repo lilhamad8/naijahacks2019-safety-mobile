@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap, map, timeout } from 'rxjs/operators';
-import { Network } from '@ionic-native/network/ngx';
 import { ToastController, Events } from '@ionic/angular';
 import { GeneralService } from './general.service';
 
@@ -13,7 +12,7 @@ let httpOptions = {
 
 //staging
 //Live
-const url ='http://localhost:8o00/';
+const url ='http://127.0.0.1:8000/';
 const apiUrl = url+'api/v1';
 export const NewtworkErrorMessage = "Please connect to a network to continue";
 
@@ -33,67 +32,14 @@ export class ApiService {
     
     constructor(private http: HttpClient,
         private generalService: GeneralService, 
-        private network: Network,
         private toastController: ToastController,
         public event: Events
         ) {
             
         }
         
-        
-        initializeNetworkEvents(): void {
-            this.network.onDisconnect().subscribe(() => {
-                if(this.previousStatus == ConnectionStatusEnum.ONLINE){
-                    this.event.publish('network:offline');
-                }
-                this.previousStatus = ConnectionStatusEnum.OFFLINE;
-            });
-            this.network.onConnect().subscribe(() => {
-                if(this.previousStatus == ConnectionStatusEnum.OFFLINE){
-                    this.event.publish('network:online');
-                }
-                this.previousStatus = ConnectionStatusEnum.ONLINE;
-            });
-        }
-        
-        subscribeToNetworkEvents(){
-            this.event.subscribe('network:offline', () => {
-                //this.storageProvider.set(StorageParameters.NETWORK_STATUS, "false");
-            });
-            this.event.subscribe('network:online', () => {
-                //this.storageProvider.set(StorageParameters.NETWORK_STATUS, "true")
-            });
-            
-            this.initializeNetworkEvents();
-        }
-        
-        isDeviceConnected() : boolean{
-            //return Boolean(this.storageProvider.get(StorageParameters.NETWORK_STATUS));
-            let conntype = this.network.type;
-            return conntype && conntype !== 'unknown' && conntype !== 'none';
-        }
-        async networkHandler(){
-            if (this.network.type === 'none') {
-                console.log('network was disconnected :-(');
-                // setTimeout(() => {
-                //     navigator['app'].exitApp();
-                // }, 4000);
-            }
-            console.log('lets see if network dey');
-            let disconnectSubscription = this.network.onDisconnect().subscribe(async () => {
-                console.log('network was disconnected :-(');
-                const toast = await this.toastController.create({
-                    message: "Please get a internet connection.",
-                    duration: 3000
-                });
-                toast.present();
-            });
-            disconnectSubscription.unsubscribe();
-            return;
-        }
-        
         httpOptions (useToken: boolean, data?:any) {
-            this.networkHandler();
+            // this.networkHandler();
             if (useToken ) {
                 const user =  JSON.parse(localStorage.getItem('farm_user'));
                 const   token  = user.token.access_token;
@@ -141,8 +87,12 @@ export class ApiService {
         }
         
         sendPost(endpoint, data, useToken?: boolean): Observable<any> {
+          console.log('in sendpost ');
+          console.log('in data '+JSON.stringify(data));
+          console.log('in tok '+useToken);
             // this.generalService.showLoading();
             const url = `${apiUrl}/${endpoint}`;
+            console.log('in url '+url);
             return this.http.post(url, data, this.httpOptions(useToken)).pipe(timeout(1000*60));
         }
         

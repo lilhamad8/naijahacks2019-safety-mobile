@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-root',
@@ -22,21 +23,29 @@ export class AppComponent {
       icon: 'list'
     }
   ];
-
+  private user:any;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private navCtrl: NavController,
+    public userService: UserService,
   ) {
     this.initializeApp();
+    this.user = userService.getUser();
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.navCtrl.navigateRoot('/login');
+      console.log(this.user);
+      if(this.user){
+        this.navCtrl.navigateRoot('/home');
+      }else{
+        this.navCtrl.navigateRoot('/login');
+      }
+      
     });
   }
 

@@ -7,35 +7,43 @@ import { reject } from 'q';
   providedIn: 'root'
 })
 export class UserService {
-  public pens: any;
+  public user: any;
   constructor(private storage: StorageService, private api: ApiService) {
     
   }
   
   // pens
-  async setPens(pens) {
-    let refined_pens = pens ? JSON.stringify(pens) : '';
-    let a :any=[];
-    a.push(refined_pens);
-    await this.storage.set(dbTables.PENS, a);
+  async setUser(user) {
+    await this.storage.set(dbTables.USER, JSON.stringify(user));
   }
   
-  getPens(id?:any) {
-    let pens = this.storage.get(dbTables.PENS);
-    // pens make sense now when loged it can be turned to local variable
-    return pens ?  JSON.parse(pens) : id ? JSON.parse(this.getPensFromApi(id)): pens;
+  
+  getUser() {
+    let user = this.storage.get(dbTables.USER);
+    return JSON.parse(user);
   }
   
-  getPensCount(id?:any) {
-    return this.getPens().length;
-  }
+  // getUserFromApi(loginData) {
+  //   console.log('in the service ');
+  //   this.api.sendPost('login',loginData).subscribe(async response => {
+  //     await this.setUser(response.data);
+  //     // this.user = response.data;
+  //     return response.data
+  //   }, async err => {
+  //     return err
+  //   });
+    
+  // }
   
-  getPensFromApi(farmId) {
-    this.api.sendGet('farms/' + farmId + '/batches?include=records', true).subscribe(async response => {
-      await this.setPens(response.data);
-      this.pens = response.data;
-    }, async err => {
+  async getUserFromApi(loginData):Promise<boolean> {
+    // my real promise b**ch
+    return new Promise((resolve,reject) => {
+      this.api.sendPost('login',loginData).subscribe(async response => {
+        await this.setUser(response.data);
+        resolve(response);
+      }, async (err) => {
+        reject(err);
+      });
     });
-    return this.pens;
   }
-  
+}
