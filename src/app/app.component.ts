@@ -39,4 +39,6 @@ export class AppComponent {
       this.navCtrl.navigateRoot('/login');
     });
   }
+
+  //color #0A1D7F
 }
