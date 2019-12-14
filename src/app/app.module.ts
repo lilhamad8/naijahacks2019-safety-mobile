@@ -20,7 +20,8 @@ import { File } from '@ionic-native/file/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-
+import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
+import {Geolocation} from '@ionic-native/geolocation/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -51,6 +52,8 @@ import { environment } from '../environments/environment';
     Media,
     File,
     SocialSharing,
+    Geolocation,
+    LocationAccuracy,
   ],
   bootstrap: [AppComponent]
 })

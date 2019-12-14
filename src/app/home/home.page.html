@@ -4,21 +4,28 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      Welcome 
+      Hey, {{fullname}}
     </ion-title>
   </ion-toolbar>
   <ion-toolbar>
     <ion-title>Report A Crime</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content>
-  <p class="space-up"></p>
-  <ion-button expand="block" style="margin-top: 100px;" type="submit" (click)="captureImage()" fill="outline">Image</ion-button>
-  <ion-button expand="block" (click)="recordAudio()" fill="outline"> <ion-icon name="mic-off"></ion-icon> Audio</ion-button>
-  <ion-button expand="block" (click)="recordVideo()" fill="outline"> <ion-icon name="play-circle"></ion-icon> Video</ion-button>
+<!-- <ion-content>
+  
 </ion-content>
 <ion-footer>
-    <ion-toolbar>
-      <ion-title>Your Audio/Video sends instantly.</ion-title>
-    </ion-toolbar>
-  </ion-footer>
+  <ion-toolbar>
+    <ion-title>Your Audio/Video sends instantly.</ion-title>
+  </ion-toolbar>
+</ion-footer> -->
+
+<ion-content>
+  <!--create a element for map. #Map - identifier -->
+  <!-- <p class="space-up"></p> -->
+    <ion-button expand="block" style="top: 100px;" type="submit" (click)="captureImage()" fill="outline">Send Image To Contact</ion-button>
+    <ion-button expand="block" (click)="recordAudio()" style="top: 170px;" fill="outline"> <ion-icon name="mic-off"></ion-icon> Send Audio To Contact</ion-button>
+    <ion-button expand="block" (click)="recordVideo()" style="top: 240px;" fill="outline"> <ion-icon name="play-circle"></ion-icon> Send Video To Contact</ion-button>
+  <div #Map class="map">
+  </div>
+</ion-content>

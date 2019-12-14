@@ -19,8 +19,8 @@ export class LoginPage {
   public bordercolor: string = 'rgba(25, 25, 25, 0.32)';
   passwordType: string = 'password';
   passwordIcon: string = 'eye';
-  public email: string;
-  public password: string;
+  public email: string = "admin@admin.com";
+  public password: string = "admin@1234";
   message: string;
   status: boolean;
   constructor(private menu: MenuController,

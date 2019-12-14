@@ -4,8 +4,15 @@ ion-button{
   margin: 5% !important;
   --border-color: #0A1D7F !important;
   color: white;
+  position:absolute;
+  left: 6%;
+  z-index: 20;
+  width: 80%;
 }
 
 .space-up{
   margin-top: 100px !important;
+}
+.map{
+  height: 100%;
 }
