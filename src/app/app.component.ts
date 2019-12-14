@@ -4,6 +4,8 @@ import { Platform, NavController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { UserService } from './user.service';
+import { Autostart } from '@ionic-native/autostart/ngx';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 @Component({
   selector: 'app-root',
@@ -18,9 +20,9 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'List',
+      title: 'Add Contact',
       url: '/list',
-      icon: 'list'
+      icon: 'person-add'
     }
   ];
   private user:any;
@@ -30,24 +32,27 @@ export class AppComponent {
     private statusBar: StatusBar,
     private navCtrl: NavController,
     public userService: UserService,
-  ) {
-    this.initializeApp();
-    this.user = userService.getUser();
+    private autostart: Autostart,
+    private backgroundMode: BackgroundMode,
+    ) {
+      this.initializeApp();
+      this.user = userService.getUser();
+    }
+    
+    initializeApp() {
+      this.platform.ready().then(() => {
+        this.statusBar.styleDefault();
+        this.splashScreen.hide();
+        this.autostart.enable();
+        this.backgroundMode.enable();
+        // if(this.user){
+          this.navCtrl.navigateRoot('/home');
+        // }else{
+        //   this.navCtrl.navigateRoot('/login');
+        // }
+        
+      });
+    }
+    
+    //color #0A1D7F
   }
-
-  initializeApp() {
-    this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
-      console.log(this.user);
-      if(this.user){
-        this.navCtrl.navigateRoot('/home');
-      }else{
-        this.navCtrl.navigateRoot('/login');
-      }
-      
-    });
-  }
-
-  //color #0A1D7F
-}

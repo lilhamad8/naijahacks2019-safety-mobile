@@ -11,8 +11,10 @@ let httpOptions = {
 };
 
 //staging
+// const url ='http://localhost:8000/';
 //Live
-const url ='http://127.0.0.1:8000/';
+const url = 'http://212.71.237.113:8000/'
+
 const apiUrl = url+'api/v1';
 export const NewtworkErrorMessage = "Please connect to a network to continue";
 

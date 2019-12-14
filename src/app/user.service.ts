@@ -18,6 +18,17 @@ export class UserService {
   }
   
   
+  getContacts() {
+    let contacts = this.storage.get(dbTables.CONTACTS);
+    return JSON.parse(contacts);
+  }
+  // contacts
+  async setContacts(contact) {
+    // old_contacts.push(contact);
+    await this.storage.set(dbTables.CONTACTS, JSON.stringify(contact));
+  }
+  
+  
   getUser() {
     let user = this.storage.get(dbTables.USER);
     return JSON.parse(user);
@@ -32,7 +43,7 @@ export class UserService {
   //   }, async err => {
   //     return err
   //   });
-    
+  
   // }
   
   async getUserFromApi(loginData):Promise<boolean> {
