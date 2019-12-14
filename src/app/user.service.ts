@@ -24,12 +24,8 @@ export class UserService {
   }
   // contacts
   async setContacts(contact) {
-    console.log(contact);
-    let old_contacts = this.getContacts()? this.getContacts(): [];
-    console.log(old_contacts);
-    old_contacts.push(contact);
-    console.log(old_contacts);
-    await this.storage.set(dbTables.CONTACTS, JSON.stringify(old_contacts));
+    // old_contacts.push(contact);
+    await this.storage.set(dbTables.CONTACTS, JSON.stringify(contact));
   }
   
   

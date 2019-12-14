@@ -7,18 +7,21 @@
       Settings
     </ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-title>Add trusted contacts email</ion-title>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form (ngSubmit)="addContact()" method="POST">
+  <form (ngSubmit)="addContact()" method="POST" class="space-up">
     
     <ion-item>
-      <ion-label position="stacked">Contacts(add trustee emails seperated by comma)</ion-label>
+      <ion-label position="stacked">Add emails seperated by comma</ion-label>
       <ion-input required type="text" [(ngModel)]="stringContacts" name="email"></ion-input>
     </ion-item>
     
     <div class="ion-padding">
-      <ion-button expand="block" type="submit" class="ion-no-margin">Add contact</ion-button>
+      <ion-button expand="block" type="submit" class="ion-no-margin">Update contact</ion-button>
     </div>
   </form>
 </ion-content>

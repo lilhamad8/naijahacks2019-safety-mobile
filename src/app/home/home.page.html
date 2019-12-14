@@ -7,49 +7,18 @@
       Welcome 
     </ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-title>Report A Crime</ion-title>
+  </ion-toolbar>
 </ion-header>
-<ion-header>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>
-        Welcome 
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
 <ion-content>
-    <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>
-            Welcome 
-          </ion-title>
-        </ion-toolbar>
-      </ion-header>
-  <!-- <ion-card class="welcome-card">
-    <img src="/assets/shapes.svg" alt=""/>
-    <ion-card-header>
-      <ion-card-subtitle>Get Started</ion-card-subtitle>
-      <ion-card-title>Welcome to Ionic</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>
-        Now that your app has been created, you'll want to start building out features
-        and components. Check out some of the resources below for next steps.
-      </p>
-    </ion-card-content>
-  </ion-card> -->
-  
-  <!-- <ion-item> -->
-    <ion-button expand="block" style="margin-top: 100px;" type="submit" (click)="captureImage()" class="ion-no-margin">Image</ion-button>
-    <!-- </ion-item> -->
-    <!-- <ion-item> -->
-      <ion-button expand="block" (click)="recordAudio()">Audio</ion-button>
-      <!-- </ion-item> -->
-      <!-- <ion-item> -->
-        <ion-button expand="block" (click)="recordVideo()" fill="outline">Video</ion-button>
-        <!-- </ion-item> -->
-      </ion-content>
+  <p class="space-up"></p>
+  <ion-button expand="block" style="margin-top: 100px;" type="submit" (click)="captureImage()" fill="outline">Image</ion-button>
+  <ion-button expand="block" (click)="recordAudio()" fill="outline"> <ion-icon name="mic-off"></ion-icon> Audio</ion-button>
+  <ion-button expand="block" (click)="recordVideo()" fill="outline"> <ion-icon name="play-circle"></ion-icon> Video</ion-button>
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+      <ion-title>Your Audio/Video sends instantly.</ion-title>
+    </ion-toolbar>
+  </ion-footer>

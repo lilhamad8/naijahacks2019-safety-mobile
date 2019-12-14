@@ -20,9 +20,9 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'List',
+      title: 'Add Contact',
       url: '/list',
-      icon: 'list'
+      icon: 'person-add'
     }
   ];
   private user:any;

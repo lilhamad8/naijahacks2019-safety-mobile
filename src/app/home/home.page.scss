@@ -2,4 +2,10 @@ ion-button{
   background: #0A1D7F !important;
   max-width: 90% !important;
   margin: 5% !important;
+  --border-color: #0A1D7F !important;
+  color: white;
+}
+
+.space-up{
+  margin-top: 100px !important;
 }

@@ -23,6 +23,7 @@ export class HomePage {
   files:any;
   public user: object;
   public fullname: string;
+  public contacts: any;
   constructor(private autostart: Autostart, 
     private backgroundMode: BackgroundMode, 
     private mediaCapture: MediaCapture, 
@@ -37,6 +38,10 @@ export class HomePage {
       this.platform.ready().then(()=>{
         let path = this.file.dataDirectory;
         this.user = userService.getUser();
+        this.user = userService.getContacts();
+        this.contacts = userService.getContacts();
+        console.log('contacts '+ this.contacts);
+        console.log('contacts '+ this.contacts.length);
         if(this.user){
           console.log('haq ' + this.user["user"][0]["fields"])
           this.fullname = this.user["user"][0]["fields"]["first_name"] + ' '+ this.user[0]["fields"]["last_name"];
@@ -45,6 +50,10 @@ export class HomePage {
         }
         
         if (this.platform.is('cordova')) {
+
+          if(this.generalService.returnShake()){
+            this.generalService.showToast(2000, 'O ti shake o');
+          }
           this.file.checkDir(path, MEDIA_FOLDER_NAME).then(
             () => {
               this.loadFiles();
@@ -57,8 +66,6 @@ export class HomePage {
           
           console.log('user- '+JSON.stringify(this.user));
           // console.log('time '+moment().format("HH:mm"));
-          
-          
         });
         
       }
@@ -114,7 +121,7 @@ export class HomePage {
               report['location'] = //;
               report['type'] = type;
               // file['body'] = 
-              this.reportService.sendReportToApi(file);
+              // this.reportService.sendReportToApi(file);
             }
             
             copyFileToLocalDir(fullPath) {
@@ -152,11 +159,13 @@ export class HomePage {
               }
               
               sendShare(file) {
-                this.socialSharing.shareViaEmail('Hey they I was attached find the location and file on your email', 'Hi, I`m in trouble!! Help', ['lilhamad8@gmail.com, adewaleadedirana@gmail.com'], null, null, Image=file).then(() => {
-                  // Success!
-                }).catch(() => {
-                  // Error!
-                });
+                if(this.contacts && this.contacts.length > 0){
+                  this.socialSharing.shareViaEmail('Hey they I was attached find the location and file on your email', 'Hi, I`m in trouble!! Help', ['lilhamad8@gmail.com, adewaleadedirana@gmail.com'], null, null, Image=file).then(() => {
+                    // Success!
+                  }).catch(() => {
+                    // Error!
+                  });
+                }
                 this.socialSharing.share('Hi,\n\nHey they I was attached find the location and file on your email.\n', '\nFiles here.', file, '\nhttp://facebook.com');
               }
             }
