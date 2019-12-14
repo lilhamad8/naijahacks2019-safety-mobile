@@ -7,10 +7,10 @@
       Hey, {{fullname}}
     </ion-title>
   </ion-toolbar>
-  <ion-toolbar>
-    <ion-title>Report A Crime</ion-title>
-  </ion-toolbar>
 </ion-header>
+<ion-toolbar>
+  <ion-title>Report A Crime</ion-title>
+</ion-toolbar>
 <!-- <ion-content>
   
 </ion-content>
@@ -23,9 +23,19 @@
 <ion-content>
   <!--create a element for map. #Map - identifier -->
   <!-- <p class="space-up"></p> -->
-    <ion-button expand="block" style="top: 100px;" type="submit" (click)="captureImage()" fill="outline">Send Image To Contact</ion-button>
-    <ion-button expand="block" (click)="recordAudio()" style="top: 170px;" fill="outline"> <ion-icon name="mic-off"></ion-icon> Send Audio To Contact</ion-button>
-    <ion-button expand="block" (click)="recordVideo()" style="top: 240px;" fill="outline"> <ion-icon name="play-circle"></ion-icon> Send Video To Contact</ion-button>
-  <div #Map class="map">
+  <!-- <ion-button expand="block" style="top: 100px;" type="submit" (click)="captureImage()" fill="outline">Send Image To Contact</ion-button> -->
+  <ion-button expand="block" (click)="recordAudio()" style="top: 170px;" fill="outline"> <ion-icon name="mic-off"></ion-icon> Send Audio To Contacts</ion-button>
+  <ion-button expand="block" (click)="recordVideo()" style="top: 240px;" fill="outline"> <ion-icon name="play-circle"></ion-icon> Send Video To Contacts</ion-button>
+  <!-- <form (ngSubmit)="sendText()" method="POST">
+    
+  <ion-textarea cols="2" [(ngModel)]="text">
+    Hello, this is {{fullname}}, I am being harrassed at oyo. Find help!!!
+  </ion-textarea>
+  
+  <div class="ion-padding">
+      <ion-button expand="block" (click)="sendText()" type="submit" style="top: 70px;" fill="outline"> <ion-icon name="play-circle"></ion-icon> Send Text To Contacts</ion-button>
   </div>
+</form> -->
+<div #Map class="map">
+</div>
 </ion-content>

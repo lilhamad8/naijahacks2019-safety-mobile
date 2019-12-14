@@ -9,6 +9,23 @@ ion-button{
   z-index: 20;
   width: 80%;
 }
+ion-textarea{
+  max-width: 90% !important;
+  margin: 5% !important;
+  // --border-color: #0A1D7F !important;
+  // color: white;
+  position:absolute;
+  left: 6%;
+  z-index: 20;
+  width: 80%;
+}
+form{
+  position:absolute;
+  // left: 6%;
+  z-index: 20;
+  width: 100%;
+  top: 302px;
+}
 
 .space-up{
   margin-top: 100px !important;

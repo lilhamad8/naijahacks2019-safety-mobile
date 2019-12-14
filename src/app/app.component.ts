@@ -43,13 +43,13 @@ export class AppComponent {
       this.platform.ready().then(() => {
         this.statusBar.styleDefault();
         this.splashScreen.hide();
-        if(this.user){
-          this.autostart.enable();
-          this.backgroundMode.enable();
+        this.autostart.enable();
+        this.backgroundMode.enable();
+        // if(this.user){
           this.navCtrl.navigateRoot('/home');
-        }else{
-          this.navCtrl.navigateRoot('/login');
-        }
+        // }else{
+        //   this.navCtrl.navigateRoot('/login');
+        // }
         
       });
     }
