@@ -11,6 +11,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { IonicStorageModule } from "@ionic/storage";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DeviceMotion } from '@ionic-native/device-motion/ngx';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { Autostart } from '@ionic-native/autostart/ngx';
+import { MediaCapture } from '@ionic-native/media-capture/ngx';
+import { Media } from '@ionic-native/media/ngx';
+import { File } from '@ionic-native/file/ngx';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,7 +40,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     StatusBar,
     SplashScreen,
     ReactiveFormsModule,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    DeviceMotion,
+    BackgroundMode,
+    Autostart,
+    MediaCapture,
+    Media,
+    File,
+    SocialSharing,
   ],
   bootstrap: [AppComponent]
 })

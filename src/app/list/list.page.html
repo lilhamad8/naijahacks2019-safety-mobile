@@ -4,24 +4,21 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      List
+      Settings
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let item of items">
-      <ion-icon [name]="item.icon" slot="start"></ion-icon>
-      {{item.title}}
-      <div class="item-note" slot="end">
-        {{item.note}}
-      </div>
+  <form (ngSubmit)="addContact()" method="POST">
+    
+    <ion-item>
+      <ion-label position="stacked">Contacts(add trustee emails seperated by comma)</ion-label>
+      <ion-input required type="text" [(ngModel)]="stringContacts" name="email"></ion-input>
     </ion-item>
-  </ion-list>
-  <!--
-    <div *ngIf="selectedItem" padding>
-      You navigated here from <b>{{selectedItem.title }}</b>
+    
+    <div class="ion-padding">
+      <ion-button expand="block" type="submit" class="ion-no-margin">Add contact</ion-button>
     </div>
-  -->
+  </form>
 </ion-content>

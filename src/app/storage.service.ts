@@ -4,6 +4,7 @@ import { Storage } from "@ionic/storage";
 export const dbTables = {
   REPORTS: "reports",
   USER: "user",
+  CONTACTS: "contacts",
   FINGERPRINT_FOR_LOGIN: "fingerprint_for_login",
 };
 

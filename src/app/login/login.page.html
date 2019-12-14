@@ -1,6 +1,6 @@
 <ion-header translucent>
   <ion-toolbar>
-    <ion-title>Login</ion-title>
+    <ion-title>Login To Your Report A Crime App</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,12 +8,12 @@
   <form (ngSubmit)="login()" method="POST">
     <ion-list lines="full" class="ion-no-margin ion-no-padding">
       <ion-item>
-        <ion-label position="stacked">Email <ion-text color="danger">*</ion-text></ion-label>
+        <ion-label position="stacked">Email</ion-label>
         <ion-input required type="email" [(ngModel)]="email" name="email"></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Password <ion-text color="danger">*</ion-text></ion-label>
+        <ion-label position="stacked">Password </ion-label>
         <ion-input required type="password" [(ngModel)]="password" name="password"></ion-input>
         <p *ngIf="status" class="error-text">{{message}}</p>
       </ion-item>
@@ -25,4 +25,7 @@
       <ion-button expand="block" type="submit" class="ion-no-margin">Login</ion-button>
     </div>
   </form>
+  <div class="ion-padding">
+    <ion-button expand="block" routerLink="/home" class="ion-no-margin">Login As A Guest</ion-button>
+  </div>
 </ion-content>
