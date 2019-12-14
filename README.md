@@ -19,7 +19,7 @@ How unique and innovative is the demo?
 
 Answer: 
 
-The app is innovative with introduction of Shake gesture to the app.
+The app is innovative with introduction of Shake gesture to report a danger instantly and Object Detection With Machine Learning to analyze recorded video which will help the trusted contact locate the victim and help the Police men and the Lawyers in investigation too.
 
 # Practicality:
 How useful is this project based on the problem participants are trying to solve?
