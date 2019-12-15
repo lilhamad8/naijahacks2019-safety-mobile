@@ -14,11 +14,6 @@ import { UserService } from '../user.service';
 })
 export class LoginPage {
   loginForm: FormGroup;
-  public error: boolean;
-  public error_message: string;
-  public bordercolor: string = 'rgba(25, 25, 25, 0.32)';
-  passwordType: string = 'password';
-  passwordIcon: string = 'eye';
   public email: string = "admin@admin.com";
   public password: string = "admin@1234";
   message: string;
@@ -27,21 +22,11 @@ export class LoginPage {
     private api: ApiService,
     public router: Router,
     public navCtrl: NavController,
-    public reportService: ReportService,
     public userService: UserService,
     private generalService: GeneralService,
-    public events: Events) {
-      this.menu.enable(false);
-      this.loginForm = new FormGroup({
-        email: new FormControl('', [Validators.required]),
-        password: new FormControl('', [Validators.required]),
-      });
+    ) {
     };
     
-    noError() {
-      this.error = false;
-      this.bordercolor = 'rgba(25, 25, 25, 0.32)';
-    }
     async login() {
       if (this.email!=null && this.password!=null) {
         this.generalService.showLoading(1000,"Login in...");
@@ -57,9 +42,5 @@ export class LoginPage {
         this.status = true;
         this.message = 'Please fill the phone number and password appropriately.'
       }
-    }
-    hideShowPassword() {
-      this.passwordType = this.passwordType === 'text' ? 'password' : 'text';
-      this.passwordIcon = this.passwordIcon === 'eye-off' ? 'eye' : 'eye-off';
     }
   }

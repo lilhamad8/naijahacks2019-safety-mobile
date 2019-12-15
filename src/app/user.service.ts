@@ -57,4 +57,16 @@ export class UserService {
       });
     });
   }
+  
+  async createUserFromApi(signupData):Promise<boolean> {
+    // my real promise b**ch
+    return new Promise((resolve,reject) => {
+      this.api.sendPost('signup',signupData).subscribe(async response => {
+        await this.setUser(response.data);
+        resolve(response);
+      }, async (err) => {
+        reject(err);
+      });
+    });
+  }
 }

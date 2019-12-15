@@ -103,10 +103,12 @@ export class HomePage {
       
       
       captureImage() {
+        this.reverseGeocode(this.location.lat, this.location.lng);
         this.mediaCapture.captureImage({limit: 1}).then(
           (data: MediaFile[]) => {
             if (data.length > 0) {
               this.sendShare(data[0].fullPath);
+              this.reverseGeocode(this.location.lat, this.location.lng);
             }
           },
           (err: CaptureError) => console.error(err)
@@ -186,7 +188,8 @@ export class HomePage {
               }
               
               sendShare(file) {
-                let msg = "Hello,\n this is "+ this.fullname+",\n\nI am being harassed right now "+ this.address?"at "+this.address : '' +". \nYou can find the footage of the event below.\n\nFind help!!!"
+                this.address = this.address?'at '+this.address:'';
+                let msg = "Hello,\n This is "+ this.fullname+",\n\nI am being harassed right now "+ this.address+" \nYou can find the footage of the event on the file attached.\n\nFind help!!!"
                 if(this.contacts && this.contacts.length > 0){
                   this.socialSharing.shareViaEmail(msg, "An emergency message from " + this.fullname, this.contacts, null, null, Image=file).then(() => {
                     // Success!
@@ -271,11 +274,11 @@ export class HomePage {
                 this.nativeGeocoder.reverseGeocode(this.location.lat ,this.location.lng, options)
                 .then((result: NativeGeocoderResult[]) => {
                   console.log(JSON.stringify(result[0]));
-                  this.address = JSON.stringify(result[0]);
-                  this.generalService.showToast(4000,'address: '+JSON.stringify(result[0]));
-                  setTimeout(() => {
-                    this.generalService.showToast(4000,'address: '+JSON.stringify(result[0]).toString());
-                  }, 3000);
+                  this.address = JSON.stringify(result[0]["thoroughfare"]+', '+result[0]["locality"]+', '+result[0]["subAdministrativeArea"]+', '+result[0]["administrativeArea"]+', '+result[0]["countryName"]+'.');
+                  // this.generalService.showToast(4000,'address: '+JSON.stringify(result[0]));
+                  // setTimeout(() => {
+                  //   // this.generalService.showToast(4000,'address: '+JSON.stringify(result[0]).toString());
+                  // }, 3000);
                   
                 })
                 .catch((error: any) => console.log(error));
@@ -291,7 +294,7 @@ export class HomePage {
 
               showMap(){
                 // reverse geocoding
-                this.reverseGeocode(this.location.lat, this.location.lng);
+                
 
                 const script = document.createElement('script');
                 script.id = 'googleMap';  
