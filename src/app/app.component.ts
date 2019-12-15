@@ -6,6 +6,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { UserService } from './user.service';
 import { Autostart } from '@ionic-native/autostart/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,11 @@ export class AppComponent {
       title: 'Add Contact',
       url: '/list',
       icon: 'person-add'
+    },
+    {
+      title: 'Analyse Video',
+      url: '/analyse',
+      icon: 'play'
     }
   ];
   private user:any;
@@ -33,6 +39,7 @@ export class AppComponent {
     private navCtrl: NavController,
     public userService: UserService,
     private autostart: Autostart,
+    private router: Router,
     private backgroundMode: BackgroundMode,
     ) {
       this.initializeApp();
@@ -45,12 +52,17 @@ export class AppComponent {
         this.splashScreen.hide();
         this.autostart.enable();
         this.backgroundMode.enable();
-        // if(this.user){
+        if(this.user){
           this.navCtrl.navigateRoot('/home');
-        // }else{
-        //   this.navCtrl.navigateRoot('/login');
-        // }
+        }else{
+          this.navCtrl.navigateRoot('/login');
+        }
         
+        this.platform.backButton.subscribe(async () => {
+          if (this.router.isActive('/home', true) || this.router.isActive('/login', true)) {
+            navigator['app'].exitApp();
+          }
+        });
       });
     }
     

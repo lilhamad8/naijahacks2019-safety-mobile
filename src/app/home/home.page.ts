@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { ToastController, Platform } from '@ionic/angular';
 import { DeviceMotion, DeviceMotionAccelerationData } from '@ionic-native/device-motion/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
@@ -13,6 +13,8 @@ import * as moment from 'moment'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
+import { NativeGeocoder, NativeGeocoderOptions, NativeGeocoderResult } from '@ionic-native/native-geocoder/ngx';
+
 declare var google: any;
 @Component({
   selector: 'app-home',
@@ -37,6 +39,7 @@ export class HomePage {
   location = {lat: null, lng: null};
   markerOptions: any = {position: null, map: null, title: null};
   marker: any;
+  public address: string;
   apiKey: any = 'AIzaSyBEB-2qDJdNaOGjDI5Fr-snSQ7dNdsMWao'; /*Your API Key*/
   constructor(private autostart: Autostart, 
     private backgroundMode: BackgroundMode, 
@@ -50,92 +53,72 @@ export class HomePage {
     public userService: UserService,
     public generalService: GeneralService,
     public geolocation: Geolocation,
+    private nativeGeocoder: NativeGeocoder,
+    public zone: NgZone,
     private file: File) {
       this.platform.ready().then(()=>{
         // map
-        const script = document.createElement('script');
-        script.id = 'googleMap';  
-        if (this.apiKey) {
-          script.src = 'https://maps.googleapis.com/maps/api/js?key=' + this.apiKey;
-        } else {
-          script.src = 'https://maps.googleapis.com/maps/api/js?key=';
-        }
-        document.head.appendChild(script);
-        /*Get Current location*/
-        this.geolocation.getCurrentPosition().then((position) =>  {
-          this.location.lat = position.coords.latitude;
-          this.location.lng = position.coords.longitude;
-        });
-        /*Map options*/
-        this.mapOptions = {
-          center: this.location,
-          zoom: 21,
-          mapTypeControl: false
-        };
-        setTimeout(() => {
-          this.map = new google.maps.Map(this.mapElement.nativeElement, this.mapOptions);
-          /*Marker Options*/
-          this.markerOptions.position = this.location;
-          this.markerOptions.map = this.map;
-          this.markerOptions.title = 'My Location';
-          this.marker = new google.maps.Marker(this.markerOptions);
-        }, 3000);
         
-        
-        //location acuracy
-        this.locationAccuracy.canRequest().then((canRequest: boolean) => {
-          
-          if(canRequest) {
-            // the accuracy option will be ignored by iOS
-            this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
-              () => console.log('Request successful'),
-              error => console.log('Error requesting location permissions', error)
-              );
-            }
+        let path = this.file.dataDirectory;
+        this.user = userService.getUser();
+        this.contacts = userService.getContacts();
+        this.showMap();
+        this.backgroundMode.enable();
+        this.backgroundMode.on("activate").subscribe(()=>{
+          // this.generalService.showToast(1000,'background ');
+          var subscription = deviceMotion.watchAcceleration({frequency:200}).subscribe(acc => {
+            //console.log(acc);
+            
+            this.calcAcceleration(acc);
             
           });
-          let path = this.file.dataDirectory;
-          this.user = userService.getUser();
-          this.contacts = userService.getContacts();
+        });
+        var subscription = deviceMotion.watchAcceleration({frequency:200}).subscribe(acc => {
+          //console.log(acc);
           
-          this.backgroundMode.enable();
-          this.backgroundMode.on("activate").subscribe(()=>{
-            // this.generalService.showToast(1000,'background ');
-            var subscription = deviceMotion.watchAcceleration({frequency:200}).subscribe(acc => {
-              //console.log(acc);
-              
-              this.calcAcceleration(acc);
-              
-            });
-          });
+          this.calcAcceleration(acc);
           
-          if(this.user){
-            this.fullname = this.user["user"]["first_name"];
-          }else{
-            this.fullname = "Guest";
-          }
-          
-          if (this.platform.is('cordova')) {
-            this.file.checkDir(path, MEDIA_FOLDER_NAME).then(
-              () => {
-                this.loadFiles();
-              },
-              err => {
-                this.file.createDir(path, MEDIA_FOLDER_NAME, false);
-              }
-              );
-            }
-            // console.log('time '+moment().format("HH:mm"));
-          });
-          
+        });
+        
+        if(this.user){
+          this.fullname = this.user["user"]["first_name"];
+        }else{
+          this.fullname = "Guest";
         }
         
+        if (this.platform.is('cordova')) {
+          this.file.checkDir(path, MEDIA_FOLDER_NAME).then(
+            () => {
+              this.loadFiles();
+            },
+            err => {
+              this.file.createDir(path, MEDIA_FOLDER_NAME, false);
+            }
+            );
+          }
+          // console.log('time '+moment().format("HH:mm"));
+        });
         
-        captureImage() {
-          this.mediaCapture.captureImage({limit: 1}).then(
+      }
+      
+      
+      captureImage() {
+        this.mediaCapture.captureImage({limit: 1}).then(
+          (data: MediaFile[]) => {
+            if (data.length > 0) {
+              this.sendShare(data[0].fullPath);
+            }
+          },
+          (err: CaptureError) => console.error(err)
+          );
+        }
+        
+        recordAudio() {
+          this.mediaCapture.captureAudio({limit: 1, duration: 60}).then(
             (data: MediaFile[]) => {
               if (data.length > 0) {
-                data[0].name = 'Danger Report Image '+moment().toDate().getTime()+' '+moment().format('DD/MM/YYYY');
+                
+                // this.copyFileToLocalDir(data[0].fullPath);
                 this.sendShare(data[0].fullPath);
               }
             },
@@ -143,11 +126,10 @@ export class HomePage {
             );
           }
           
-          recordAudio() {
-            this.mediaCapture.captureAudio({limit: 1, duration: 60}).then(
+          recordVideo() {
+            this.mediaCapture.captureVideo({limit: 1, duration: 10, quality: 20}).then(
               (data: MediaFile[]) => {
                 if (data.length > 0) {
-                  data[0].name = 'Danger Report Audio '+moment().toDate().getTime()+' '+moment().format('DD/MM/YYYY');
                   // this.copyFileToLocalDir(data[0].fullPath);
                   this.sendShare(data[0].fullPath);
                 }
@@ -156,123 +138,203 @@ export class HomePage {
               );
             }
             
-            recordVideo() {
-              this.mediaCapture.captureVideo({limit: 1, duration: 10, quality: 20}).then(
-                (data: MediaFile[]) => {
-                  if (data.length > 0) {
-                    data[0].name = 'Danger Report Video '+moment().toDate().getTime()+' '+moment().format('DD/MM/YYYY');
-                    // this.copyFileToLocalDir(data[0].fullPath);
-                    this.sendShare(data[0].fullPath);
-                  }
+            sendFileToApi(data, type){
+              console.log('time '+moment().toDate().getTime());
+              console.log('time '+moment().format('DD/MM/YYYY'));
+              let report:object = {};
+              let file:object = {};
+              report["sender"] = this.user["id"]; report["time"] = moment().format("HH:mm"); 
+              report['date'] = moment().format('DD/MM/YYYY');
+              report['location'] = //;
+              report['type'] = type;
+              // file['body'] = 
+              // this.reportService.sendReportToApi(file);
+            }
+            
+            copyFileToLocalDir(fullPath) {
+              let myPath = fullPath;
+              // Make sure we copy from the right location
+              if (fullPath.indexOf('file://') < 0) {
+              myPath = 'file://' + fullPath;
+            }
+            
+            const ext = myPath.split('.').pop();
+            const d = Date.now();
+            const newName = `${d}.${ext}`;
+            
+            const name = myPath.substr(myPath.lastIndexOf('/') + 1);
+            const copyFrom = myPath.substr(0, myPath.lastIndexOf('/') + 1);
+            const copyTo = this.file.dataDirectory + MEDIA_FOLDER_NAME;
+            
+            this.file.copyFile(copyFrom, name, copyTo, newName).then(
+              success => {
+                this.loadFiles();
+              },
+              error => {
+                console.log('error: ', error);
+              }
+              );
+            }
+            
+            loadFiles() {
+              this.file.listDir(this.file.dataDirectory, MEDIA_FOLDER_NAME).then(
+                res => {
+                  this.files = res;
                 },
-                (err: CaptureError) => console.error(err)
+                err => console.log('error loading files: ', err)
                 );
               }
               
-              sendFileToApi(data, type){
-                console.log('time '+moment().toDate().getTime());
-                console.log('time '+moment().format('DD/MM/YYYY'));
-                let report:object = {};
-                let file:object = {};
-                report["sender"] = this.user["id"]; report["time"] = moment().format("HH:mm"); 
-                report['date'] = moment().format('DD/MM/YYYY');
-                report['location'] = //;
-                report['type'] = type;
-                // file['body'] = 
-                // this.reportService.sendReportToApi(file);
+              sendShare(file) {
+                let msg = "Hello,\n this is "+ this.fullname+",\n\nI am being harassed right now "+ this.address?"at "+this.address : '' +". \nYou can find the footage of the event below.\n\nFind help!!!"
+                if(this.contacts && this.contacts.length > 0){
+                  this.socialSharing.shareViaEmail(msg, "An emergency message from " + this.fullname, this.contacts, null, null, Image=file).then(() => {
+                    // Success!
+                  }).catch(() => {
+                    // Error!
+                  });
+                }else{
+                  this.socialSharing.share(msg, "An emergency message from " + this.fullname,file);
+                }
               }
               
-              copyFileToLocalDir(fullPath) {
-                let myPath = fullPath;
-                // Make sure we copy from the right location
-                if (fullPath.indexOf('file://') < 0) {
-                myPath = 'file://' + fullPath;
+              sendText() {
+                
+                if(this.contacts && this.contacts.length > 0){
+                  this.socialSharing.shareViaEmail(this.text, this.contacts, null).then(() => {
+                    // Success!
+                  }).catch(() => {
+                    // Error!
+                  });
+                }else{
+                  this.socialSharing.share(this.text, null, null);
+                }
               }
               
-              const ext = myPath.split('.').pop();
-              const d = Date.now();
-              const newName = `${d}.${ext}`;
               
-              const name = myPath.substr(myPath.lastIndexOf('/') + 1);
-              const copyFrom = myPath.substr(0, myPath.lastIndexOf('/') + 1);
-              const copyTo = this.file.dataDirectory + MEDIA_FOLDER_NAME;
               
-              this.file.copyFile(copyFrom, name, copyTo, newName).then(
-                success => {
-                  this.loadFiles();
-                },
-                error => {
-                  console.log('error: ', error);
-                }
-                );
-              }
-              
-              loadFiles() {
-                this.file.listDir(this.file.dataDirectory, MEDIA_FOLDER_NAME).then(
-                  res => {
-                    this.files = res;
-                  },
-                  err => console.log('error loading files: ', err)
-                  );
-                }
-                
-                sendShare(file) {
-                  let msg = "Hello, this is "+ this.fullname+",\nI am being harassed at ikeja. \nYou can find the footage of the event here below.\nFind help!!!"
-                  if(this.contacts && this.contacts.length > 0){
-                    this.socialSharing.shareViaEmail(msg, "An emergency message from " + this.fullname, this.contacts, null, null, Image=file).then(() => {
-                      // Success!
-                    }).catch(() => {
-                      // Error!
-                    });
-                  }else{
-                    this.socialSharing.shareViaEmail(msg, "An emergency message from " + this.fullname, this.contacts, null, null, Image=file);
-                  }
-                }
-                
-                sendText() {
-                  
-                  if(this.contacts && this.contacts.length > 0){
-                    this.socialSharing.shareViaEmail(this.text, this.contacts, null).then(() => {
-                      // Success!
-                    }).catch(() => {
-                      // Error!
-                    });
-                  }else{
-                    this.socialSharing.share(this.text, null, null);
-                  }
-                }
-                
-                
-                
-                calcAcceleration(acc){
-                  if(!this.lastX) {
-                    this.lastX = acc.x;
-                    this.lastY = acc.y;
-                    this.lastZ = acc.z;
-                    return;
-                  }
-                  
-                  let deltaX:number, deltaY:number, deltaZ:number;
-                  deltaX = Math.abs(acc.x-this.lastX);
-                  deltaY = Math.abs(acc.y-this.lastY);
-                  deltaZ = Math.abs(acc.z-this.lastZ);
-                  
-                  if(deltaX + deltaY + deltaZ > 3) {
-                    this.moveCounter++;
-                  } else {
-                    this.moveCounter = Math.max(0, --this.moveCounter);
-                  }
-                  
-                  if(this.moveCounter > 10) { 
-                    console.log('SHAKE');
-                    // this.generalService.showToast(1000, `Shake o o o o`);
-                    // this.openCamera();
-                    this.recordVideo();
-                    this.moveCounter=0; 
-                  }
-                  
+              calcAcceleration(acc){
+                if(!this.lastX) {
                   this.lastX = acc.x;
                   this.lastY = acc.y;
                   this.lastZ = acc.z;
+                  return;
                 }
+                
+                let deltaX:number, deltaY:number, deltaZ:number;
+                deltaX = Math.abs(acc.x-this.lastX);
+                deltaY = Math.abs(acc.y-this.lastY);
+                deltaZ = Math.abs(acc.z-this.lastZ);
+                
+                if(deltaX + deltaY + deltaZ > 3) {
+                  this.moveCounter++;
+                } else {
+                  this.moveCounter = Math.max(0, --this.moveCounter);
+                }
+                
+                if(this.moveCounter > 9 && this.moveCounter <11) { 
+                  console.log('SHAKE');
+                  // this.generalService.showToast(1000, `Shake o o o o`);
+                  // this.openCamera();
+                  this.captureImage();
+                  this.moveCounter=0; 
+                }
+                
+                else if(this.moveCounter > 10 && this.moveCounter <13) { 
+                  console.log('SHAKE');
+                  // this.generalService.showToast(1000, `Shake o o o o`);
+                  // this.openCamera();
+                  this.recordAudio();
+                  this.moveCounter=0; 
+                }
+                
+                else if(this.moveCounter > 15) { 
+                  console.log('SHAKE');
+                  // this.generalService.showToast(1000, `Shake o o o o`);
+                  // this.openCamera();
+                  this.recordVideo();
+                  this.moveCounter=0; 
+                }
+                
+                this.lastX = acc.x;
+                this.lastY = acc.y;
+                this.lastZ = acc.z;
               }
+              
+              reverseGeocode(lat, lng) {
+                
+                let options: NativeGeocoderOptions = {
+                  useLocale: true,
+                  maxResults: 5
+                };
+                
+                this.nativeGeocoder.reverseGeocode(this.location.lat ,this.location.lng, options)
+                .then((result: NativeGeocoderResult[]) => {
+                  console.log(JSON.stringify(result[0]));
+                  this.address = JSON.stringify(result[0]);
+                  this.generalService.showToast(4000,'address: '+JSON.stringify(result[0]));
+                  setTimeout(() => {
+                    this.generalService.showToast(4000,'address: '+JSON.stringify(result[0]).toString());
+                  }, 3000);
+                  
+                })
+                .catch((error: any) => console.log(error));
+                
+                // this.nativeGeocoder.forwardGeocode('Berlin', options)
+                //   .then((result: NativeGeocoderResult[]) => {
+                //     console.log('The coordinates are latitude=' + result[0].latitude + ' and longitude=' + result[0].longitude);
+                //     this.generalService.showToast(4000,'The coordinates are latitude=' + result[0].latitude + ' and longitude=' + result[0].longitude);
+                
+                //   })
+                //   .catch((error: any) => console.log(error));
+              }
+
+              showMap(){
+                // reverse geocoding
+                this.reverseGeocode(this.location.lat, this.location.lng);
+
+                const script = document.createElement('script');
+                script.id = 'googleMap';  
+                if (this.apiKey) {
+                  script.src = 'https://maps.googleapis.com/maps/api/js?key=' + this.apiKey;
+                } else {
+                  script.src = 'https://maps.googleapis.com/maps/api/js?key=';
+                }
+                document.head.appendChild(script);
+                /*Get Current location*/
+                this.geolocation.getCurrentPosition().then((position) =>  {
+                  this.location.lat = position.coords.latitude;
+                  this.location.lng = position.coords.longitude;
+                });
+
+                /*Map options*/
+                this.mapOptions = {
+                  center: this.location,
+                  zoom: 21,
+                  mapTypeControl: false
+                };
+                setTimeout(() => {
+                  this.map = new google.maps.Map(this.mapElement.nativeElement, this.mapOptions);
+                  /*Marker Options*/
+                  this.markerOptions.position = this.location;
+                  this.markerOptions.map = this.map;
+                  this.markerOptions.title = 'My Location';
+                  this.marker = new google.maps.Marker(this.markerOptions);
+                }, 2000);
+                
+                
+                //location acuracy
+                this.locationAccuracy.canRequest().then((canRequest: boolean) => {
+                  
+                  if(canRequest) {
+                    // the accuracy option will be ignored by iOS
+                    this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
+                      () => console.log('Request successful'),
+                      error => console.log('Error requesting location permissions', error)
+                      );
+                    }
+                    
+                  });
+              }
+              
+            }

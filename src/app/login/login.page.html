@@ -1,31 +1,32 @@
 <ion-header translucent>
   <ion-toolbar>
-    <ion-title>Login To Your Report A Crime App</ion-title>
+    <ion-title>Login To Your "Report A Crime" App</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen>
   <form (ngSubmit)="login()" method="POST">
-    <ion-list lines="full" class="ion-no-margin ion-no-padding">
-      <ion-item>
+    <!-- <ion-list lines="full" class="ion-no-margin ion-no-padding"> -->
+      <!-- <ion-item> -->
         <ion-label position="stacked">Email</ion-label>
         <ion-input required type="email" [(ngModel)]="email" name="email"></ion-input>
-      </ion-item>
+      <!-- </ion-item> -->
 
-      <ion-item>
+      <!-- <ion-item> -->
         <ion-label position="stacked">Password </ion-label>
         <ion-input required type="password" [(ngModel)]="password" name="password"></ion-input>
         <p *ngIf="status" class="error-text">{{message}}</p>
-      </ion-item>
+      <!-- </ion-item> -->
       
       
-    </ion-list>
+    <!-- </ion-list> -->
 
     <div class="ion-padding">
-      <ion-button expand="block" type="submit" class="ion-no-margin">Login</ion-button>
+      <ion-button expand="block" type="submit" style="top: 240px;" fill="outline"><ion-icon name="person"></ion-icon> &nbsp; Login</ion-button>
     </div>
   </form>
   <div class="ion-padding">
-    <ion-button expand="block" routerLink="/home" class="ion-no-margin">Login As A Guest</ion-button>
+    <ion-button expand="block" routerLink="/home" fill="outline"> <ion-icon name="jet"></ion-icon> &nbsp; Login As A Guest</ion-button>
   </div>
+  <small class="space">Just Click Login the login credential is prefilled already.</small>
 </ion-content>

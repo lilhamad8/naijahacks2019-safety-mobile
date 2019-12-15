@@ -21,7 +21,8 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
-import {Geolocation} from '@ionic-native/geolocation/ngx';
+import { Geolocation} from '@ionic-native/geolocation/ngx';
+import { NativeGeocoder, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -54,6 +55,7 @@ import {Geolocation} from '@ionic-native/geolocation/ngx';
     SocialSharing,
     Geolocation,
     LocationAccuracy,
+    NativeGeocoder,
   ],
   bootstrap: [AppComponent]
 })

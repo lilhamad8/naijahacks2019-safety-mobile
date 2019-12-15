@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Run Object Detection
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="runml()" method="POST">
+    <!-- <ion-list lines="full" class="ion-no-margin ion-no-padding"> -->
+      <!-- <ion-item> -->
+        <ion-label position="stacked">Video url</ion-label>
+        <ion-input required type="text" [(ngModel)]="url" name="url"></ion-input>
+      <!-- </ion-item> -->
+
+    <div class="ion-padding">
+      <ion-button expand="block" type="submit" style="top: 240px;" fill="outline">Run Object Detection ML</ion-button>
+    </div>
+  </form>
+</ion-content>

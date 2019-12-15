@@ -1,11 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-menu-button autoHide="false"></ion-menu-button>
     </ion-buttons>
     <ion-title>
       Hey, {{fullname}}
     </ion-title>
+    <ion-menu-toggle large style="float: right; position: absolute;
+    right: 20px; top: 12px;">
+      <ion-icon style="zoom:2.0;" name="contact"></ion-icon>
+    </ion-menu-toggle>
+    
   </ion-toolbar>
 </ion-header>
 <ion-toolbar>
@@ -23,9 +28,9 @@
 <ion-content>
   <!--create a element for map. #Map - identifier -->
   <!-- <p class="space-up"></p> -->
-  <!-- <ion-button expand="block" style="top: 100px;" type="submit" (click)="captureImage()" fill="outline">Send Image To Contact</ion-button> -->
-  <ion-button expand="block" (click)="recordAudio()" style="top: 170px;" fill="outline"> <ion-icon name="mic-off"></ion-icon> Send Audio To Contacts</ion-button>
-  <ion-button expand="block" (click)="recordVideo()" style="top: 240px;" fill="outline"> <ion-icon name="play-circle"></ion-icon> Send Video To Contacts</ion-button>
+  <ion-button expand="block" style="top: 100px;" type="submit" (click)="captureImage()" fill="outline"><ion-icon name="camera"></ion-icon> &nbsp; Send Image To Contacts</ion-button>
+  <ion-button expand="block" (click)="recordAudio()" style="top: 170px;" fill="outline"> <ion-icon name="mic-off"></ion-icon>&nbsp; Send Audio To Contacts</ion-button>
+  <ion-button expand="block" (click)="recordVideo()" style="top: 240px;" fill="outline"> <ion-icon name="play-circle"></ion-icon>&nbsp; Send Video To Contacts</ion-button>
   <!-- <form (ngSubmit)="sendText()" method="POST">
     
   <ion-textarea cols="2" [(ngModel)]="text">
