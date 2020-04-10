@@ -1,7 +1,7 @@
 # Report A Crime
 This is the app built by team Neon for Naija Hack hackaton 2019.
 
-This Projec is built on ionic.
+This Project is built on ionic.
 
 The app provides a very fast method of reporting crime. 
 Through 
